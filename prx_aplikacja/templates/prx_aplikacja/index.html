@@ -11,7 +11,13 @@
         {% for wpis in lista %}
             <tr>
                 <td class="{% cycle 'a1' 'a2' %}"><a href="{{ wpis.adres }}">{{ wpis.adres }}</a></td>
-                <td class="{% cycle 'k1' 'k2' %}"><a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a></td>
+                <td class="{% cycle 'k1' 'k2' %}">
+                {% if wpis.kraj != '' %}
+                    <a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a>
+                {% else %}
+                    &mdash;
+                {% endif %}
+                </td>
                 <td class="{% cycle 'p1' 'p2' %}">{{ wpis.ping|pokoloruj_ping }} ms</td>
                 <td class="{% cycle 'i1' 'i2' %}"><a href="/ip/{{ wpis.ip }}">{{ wpis.ip }}</a></td>
             </tr>
