@@ -40,6 +40,7 @@ def index(zadanie, strona):
         'nieklikalny_naglowek': (strona == 1),
         'description_widoczny': True,
         'dluga_stopka': True,
+        'adres_ip': zadanie.META.get('REMOTE_ADDR'),
     }
 
     return render(zadanie, 'prx_aplikacja/index.html', kontekst)
