@@ -49,6 +49,8 @@ MIDDLEWARE_CLASSES = (
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.security.SecurityMiddleware',
+    'prx.middleware.x_ua_compatible.XUACompatible',
+    'prx.middleware.x_content_type_options.XContentTypeOptions',
 )
 
 ROOT_URLCONF = 'prx.urls'
