@@ -3,7 +3,9 @@
     <head>
         <title>Lista bramek proxy</title>
         <link rel="stylesheet" href="/style.css">
-        <meta name="description" content="Spis bramek proxy posortowany według szybkości. Przy każdym proxy podany jest kraj, czas odpowiedzi oraz adres IP.">
+        {% if description_widoczny %}
+            <meta name="description" content="Spis bramek proxy posortowany według szybkości. Przy każdym proxy podany jest kraj, czas odpowiedzi oraz adres IP.">
+        {% endif %}
         <meta name="geo.country" content="pl">
         <script>
             if (top != self) top.location.replace(self.location.href);
@@ -12,7 +14,11 @@
         </script>
     </head>
     <body>
-        <header><h1>Spis bramek proxy</h1></header>
+        {% if nieklikalny_naglowek %}
+            <header><h1>Spis bramek proxy</h1></header>
+        {% else %}
+            <header><h1><a href="/">Spis bramek proxy</a></h1></header>
+        {% endif %}
         <br><br>
         <div class="boksy">
             <script>
@@ -46,14 +52,16 @@
                         </script>
                         <script src="http://pagead2.googlesyndication.com/pagead/show_ads.js"></script>
                     </div>
-                    <br>
-                    <a href="/dodaj">Dodaj nowy proxy</a>
-                    <br><br>
-                    <a href="http://centrump2p.com/" rel="nofollow">Forum Centrum P2P</a>
-                    <br><br><br>
-                    <a href="mailto:admin@prx.centrump2p.com">admin@prx.centrump2p.com</a> |
-                    <a href="http://creativecommons.org/licenses/by/3.0/pl/">CC BY</a> |
-                    <a href="/prywatnosc">Polityka prywatności</a>
+                    {% if dluga_stopka %}
+                        <br>
+                        <a href="/dodaj">Dodaj nowy proxy</a>
+                        <br><br>
+                        <a href="http://centrump2p.com/" rel="nofollow">Forum Centrum P2P</a>
+                        <br><br><br>
+                        <a href="mailto:admin@prx.centrump2p.com">admin@prx.centrump2p.com</a> |
+                        <a href="http://creativecommons.org/licenses/by/3.0/pl/">CC BY</a> |
+                        <a href="/prywatnosc">Polityka prywatności</a>
+                    {% endif %}
                 </div>
             </footer>
         </div>

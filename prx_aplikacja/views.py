@@ -32,6 +32,9 @@ def index(zadanie, strona):
         'lista': obiekty[pierwszy:ostatni],
         'dlugosc_pelnej_listy': obiekty.count(),
         'strona': strona,
+        'nieklikalny_naglowek': (strona == 1),
+        'description_widoczny': True,
+        'dluga_stopka': True,
     }
 
     return render(zadanie, 'prx_aplikacja/index.html', kontekst)
