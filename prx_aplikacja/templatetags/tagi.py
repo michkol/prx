@@ -1,5 +1,6 @@
 from django import template
 from django.utils.safestring import mark_safe
+from django.template.defaultfilters import floatformat
 import math
 import copy
 
@@ -8,18 +9,16 @@ register = template.Library()
 @register.filter
 def pokoloruj_ping(wartosc):
     if wartosc is not None:
-        wartosc_liczbowa = float(wartosc)
-        
-        if (wartosc_liczbowa < 125):
+        if wartosc < 125:
             kolor = 'green'
-        elif (wartosc_liczbowa < 400):
+        elif wartosc < 400:
             kolor = 'black'
-        elif (wartosc_liczbowa < 1100):
+        elif wartosc < 1100:
             kolor = '#FF6600'
         else:
             kolor = 'red'
         
-        return mark_safe('<span style="color: ' + kolor + '">' + str(wartosc) + '</span>')
+        return mark_safe('<span style="color: ' + kolor + '">' + floatformat(wartosc, 2) + '</span>')
     else:
         return mark_safe('<span style="color: red">&#8734;</span>')
 
