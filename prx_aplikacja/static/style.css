@@ -1,0 +1,126 @@
+body {
+    margin: 0;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
+    background-color: #FFF4CC;
+    margin-bottom: 20px;
+    min-width: 860px;
+}
+
+h1 {
+    display: block;
+    background-color: #F7C04A;
+    margin: 0;
+    padding: 10px 5px;
+    border-bottom: 1px black solid;
+    font-size: 26px;
+}
+
+h1 a:link, h1 a:visited, h1 a:hover, h1 a:focus {
+    margin: 0;
+    padding: 0;
+    color: black;
+    background-color: transparent;
+}
+
+#content {
+    padding: 20px 5px;
+}
+
+#lista {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 auto;
+    margin-bottom: 10px;
+    padding: 0;
+    table-layout: fixed;
+    height: 100%;
+}
+
+#lista td, #lista th { border: 1px black solid; padding: 3px 2px }
+
+#lista .a1 { width: 50%; overflow: hidden; text-overflow: ellipsis }
+#lista .k1 { width: 15%; text-align: center }
+#lista .p1 { width: 15%; text-align: center }
+#lista .i1 { width: 20%; text-align: center }
+
+#lista .a2 { background-color: #F7DDA5; width: 50%; overflow: hidden; text-overflow: ellipsis }
+#lista .k2 { background-color: #F7DDA5; width: 15%; text-align: center }
+#lista .p2 { background-color: #F7DDA5; width: 15%; text-align: center }
+#lista .i2 { background-color: #F7DDA5; width: 20%; text-align: center }
+
+a { text-decoration: none }
+a:link { color: blue }
+a:visited { color: blue }
+a:hover, a:focus { color: white; background-color: black }
+
+#lista .i1 a:link, #lista .i1 a:visited { color: black }
+#lista .i2 a:link, #lista .i2 a:visited { color: black }
+
+#lista .k1 a:link, #lista .k1 a:visited { color: black }
+#lista .k2 a:link, #lista .k2 a:visited { color: black }
+
+#lista .i1 a:hover, #lista .i1 a:focus { color: white }
+#lista .i2 a:hover, #lista .i2 a:focus { color: white }
+
+#lista .k1 a:hover, #lista .k1 a:focus { color: white }
+#lista .k2 a:hover, #lista .k2 a:focus { color: white }
+
+#pager { text-align: center }
+#pager * { zoom: 1 }
+
+#pager a {
+    padding: 2px 6px;
+    background-color: #DDDDDD;
+    color: black;
+    border: 1px black solid;
+}
+
+#pager strong, #pager span {
+    padding: 3px 5px;
+}
+
+#pager a:hover, #pager a:focus {
+    background-color: black;
+    color: white;
+}
+
+h2 {
+    font-size: 16px;
+    font-weight: normal;
+    margin: 0;
+    padding: 0;
+    margin-bottom: 7px;
+}
+
+.sh {
+    text-align: left;
+    font-weight: bold;
+    font-family: Verdana, sans-serif;
+    font-size: 18px;
+}
+
+#pp {
+    font-family: Verdana, sans-serif;
+    font-size: 15px;
+}
+
+#kraje {
+    list-style-type: disc;
+    margin: 0;
+    margin-left: 20px;
+    padding: 0;
+    font-size: 17px;
+}
+
+.boksy {
+    margin: 0 5px;
+}
+
+#content .boksy {
+    margin: 0;
+}
+
+.rt {
+    font-size: 0;
+}

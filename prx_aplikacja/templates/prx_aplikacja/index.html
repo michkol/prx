@@ -1,0 +1,20 @@
+{% extends 'prx_aplikacja/strona.html' %}
+
+{% block glowna_zawartosc %}
+    <table id="lista">
+        <tr>
+            <th class="a2" scope="col">Adres</th>
+            <th class="k2" scope="col">Kraj</th>
+            <th class="p2" scope="col">Ping</th>
+            <th class="i2" scope="col">IP</th>
+        </tr>
+        {% for wpis in lista %}
+            <tr>
+                <td class="{% cycle 'a1' 'a2' %}"><a href="{{ wpis.adres }}">{{ wpis.adres }}</a></td>
+                <td class="{% cycle 'k1' 'k2' %}"><a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a></td>
+                <td class="{% cycle 'p1' 'p2' %}"><span style="color: black">{{ wpis.ping }}</span> ms</td>
+                <td class="{% cycle 'i1' 'i2' %}"><a href="/ip/{{ wpis.ip }}">{{ wpis.ip }}</a></td>
+            </tr>
+        {% endfor %}
+    </table>
+{% endblock %}
