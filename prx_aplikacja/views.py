@@ -5,21 +5,23 @@ from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 import math
 
 def index(zadanie, strona):
-    obiekty = BramkaProxy.objects.order_by(
-        # szybkie polskie nad innymi
-        Case(When(kraj='PL', ping__lt=250, then=1), default=0).desc(),
-        
-        # nieodpowiadające pod innymi
-        Case(When(ping__isnull=True, then=1), default=0).asc(),
-        
-        # z niewyliczonym numerem sekwencyjnym dla IP jak z bardzo dużym
-        # (trwa aktualizacja bazy, wyliczenie nastąpi po jej zakończeniu)
-        Case(When(ip_indeks__isnull=True, then=1), default=0).asc(),
+    sortowanie = []
 
-        # według szybkości, ale z coraz mocniejszym obniżaniem pozycji
-        # kolejnych bramek z powtórzonym IP
-        (F('ping') * F('ip_indeks') + 85 * (F('ip_indeks') - 1)).asc()
-    )
+    # szybkie polskie nad innymi
+    sortowanie.append(Case(When(kraj='PL', ping__lt=250, then=1), default=0).desc())
+
+    # nieodpowiadające pod innymi
+    sortowanie.append(Case(When(ping__isnull=True, then=1), default=0).asc())
+
+    # z niewyliczonym numerem sekwencyjnym dla IP jak z bardzo dużym
+    # (trwa aktualizacja bazy, wyliczenie nastąpi po jej zakończeniu)
+    sortowanie.append(Case(When(ip_indeks__isnull=True, then=1), default=0).asc())
+
+    # według szybkości, ale z coraz mocniejszym obniżaniem pozycji    
+    # kolejnych bramek z powtórzonym IP    
+    sortowanie.append((F('ping') * F('ip_indeks') + 85 * (F('ip_indeks') - 1)).asc())
+
+    obiekty = BramkaProxy.objects.order_by(*sortowanie)
 
     na_strone = 80
     ile_stron = math.ceil(obiekty.count() / na_strone)
