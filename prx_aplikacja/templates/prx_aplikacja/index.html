@@ -18,7 +18,11 @@
                 <td class="a{{ parzystosc }}"><a href="{{ wpis.adres }}">{{ wpis.adres }}</a></td>
                 <td class="k{{ parzystosc }}">
                 {% if wpis.kraj != '' %}
-                    <a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a>
+                    {% if kraj == None %}
+                        <a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a>
+                    {% else %}
+                        {{ wpis.kraj }}
+                    {% endif %}
                 {% else %}
                     &mdash;
                 {% endif %}
