@@ -62,7 +62,7 @@ def index(zadanie, strona, kraj=None):
         'prefiks_adresow_stron': prefiks_adresow_stron,
         'nieklikalny_naglowek': (kraj is None and strona == 1),
         'description_widoczny': (kraj is None),
-        'dluga_stopka': (kraj is None),
+        'dluga_stopka': (kraj is None and strona == 1),
         'adres_ip': zadanie.META.get('REMOTE_ADDR'),
     }
 
