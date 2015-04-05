@@ -22,7 +22,7 @@
                 <td class="p{{ parzystosc }}">{{ wpis.ping|pokoloruj_ping }} ms</td>
                 <td class="i{{ parzystosc }}"><a href="/ip/{{ wpis.ip }}">{{ wpis.ip }}</a></td>
             </tr>
-            {% if forloop.counter == 40 %}
+            {% if forloop.counter == 40 and lista|length >= 80 %}
                 <tr>
                     <td class="rt" colspan="4">
                         <div class="boksy">
