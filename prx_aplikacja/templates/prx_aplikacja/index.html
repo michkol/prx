@@ -1,6 +1,10 @@
 {% extends 'prx_aplikacja/strona.html' %}
 
 {% block glowna_zawartosc %}
+    {% if kraj != None %}
+        <h2>Wszystkie proxy z kraju: {{ kraj|pelna_nazwa_kraju }}</h2>
+    {% endif %}
+
     <table id="lista">
         <tr>
             <th class="a2" scope="col">Adres</th>
@@ -46,6 +50,6 @@
     </table>
 
     <div id="pager">
-        {% linki_stronicowania strona 80 dlugosc_pelnej_listy 16 '/' %}
+        {% linki_stronicowania strona 80 dlugosc_pelnej_listy 16 prefiks_adresow_stron %}
     </div>
 {% endblock %}
