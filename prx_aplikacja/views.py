@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from django.db.models import Case, When, F
 from .models import BramkaProxy
+from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 import math
 
 def index(zadanie, strona):
@@ -43,4 +44,6 @@ def index(zadanie, strona):
         'adres_ip': zadanie.META.get('REMOTE_ADDR'),
     }
 
-    return render(zadanie, 'prx_aplikacja/index.html', kontekst)
+    odpowiedz = render(zadanie, 'prx_aplikacja/index.html', kontekst)
+    dodaj_naglowki_stronicowania(odpowiedz, strona, na_strone, obiekty.count(), '/')
+    return odpowiedz
