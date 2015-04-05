@@ -3,6 +3,8 @@
 {% block glowna_zawartosc %}
     {% if kraj != None %}
         <h2>Wszystkie proxy z kraju: {{ kraj|pelna_nazwa_kraju }}</h2>
+    {% elif ip != None %}
+        <h2>Wszystkie proxy z IP: {{ ip }}</h2>
     {% endif %}
 
     <table id="lista">
@@ -15,20 +17,30 @@
         {% for wpis in lista %}
             {% cycle '1' '2' as parzystosc silent %}
             <tr>
-                <td class="a{{ parzystosc }}"><a href="{{ wpis.adres }}">{{ wpis.adres }}</a></td>
-                <td class="k{{ parzystosc }}">
-                {% if wpis.kraj != '' %}
-                    {% if kraj == None %}
-                        <a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a>
-                    {% else %}
-                        {{ wpis.kraj }}
-                    {% endif %}
-                {% else %}
-                    &mdash;
-                {% endif %}
+                <td class="a{{ parzystosc }}">
+                    <a href="{{ wpis.adres }}">{{ wpis.adres }}</a>
                 </td>
-                <td class="p{{ parzystosc }}">{{ wpis.ping|pokoloruj_ping }} ms</td>
-                <td class="i{{ parzystosc }}"><a href="/ip/{{ wpis.ip }}">{{ wpis.ip }}</a></td>
+                <td class="k{{ parzystosc }}">
+                    {% if wpis.kraj != '' %}
+                        {% if kraj == None %}
+                            <a href="/kraj/{{ wpis.kraj|lower }}/">{{ wpis.kraj }}</a>
+                        {% else %}
+                            {{ wpis.kraj }}
+                        {% endif %}
+                    {% else %}
+                        &mdash;
+                    {% endif %}
+                </td>
+                <td class="p{{ parzystosc }}">
+                    {{ wpis.ping|pokoloruj_ping }} ms
+                </td>
+                <td class="i{{ parzystosc }}">
+                    {% if ip == None %}
+                        <a href="/ip/{{ wpis.ip }}">{{ wpis.ip }}</a>
+                    {% else %}
+                        {{ wpis.ip }}
+                    {% endif %}
+                </td>
             </tr>
             {% if forloop.counter == 40 and lista|length >= 80 %}
                 <tr>
@@ -53,7 +65,9 @@
         {% endfor %}
     </table>
 
-    <div id="pager">
-        {% linki_stronicowania strona 80 dlugosc_pelnej_listy 16 prefiks_adresow_stron %}
-    </div>
+    {% if strona != None %}
+        <div id="pager">
+            {% linki_stronicowania strona 80 dlugosc_pelnej_listy 16 prefiks_adresow_stron %}
+        </div>
+    {% endif %}
 {% endblock %}
