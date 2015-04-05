@@ -51,8 +51,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.security.SecurityMiddleware',
     'prx.middleware.content_language.ContentLanguage',
     'prx.middleware.x_ua_compatible.XUACompatible',
-    'prx.middleware.x_content_type_options.XContentTypeOptions',
 )
+
+SECURE_CONTENT_TYPE_NOSNIFF = True
 
 ROOT_URLCONF = 'prx.urls'
 
