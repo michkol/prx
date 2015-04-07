@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.db.models import Case, When, F
 from django.http import Http404
 from .models import BramkaProxy
@@ -85,3 +85,11 @@ def index(zadanie, strona=None, kraj=None, ip=None):
         dodaj_naglowki_stronicowania(odpowiedz, strona, na_strone, obiekty.count(), prefiks_adresow_stron)
 
     return odpowiedz
+
+def losowy(zadanie):
+    # losowa działająca bramka proxy z sensowną szybkością
+    # z ograniczeniem zbyt częstego wybierania proxy z tego samego IP
+    obiekty = BramkaProxy.objects.filter(ping__lt=700, ip_blad=0)
+    obiekty = obiekty.extra(select={'waga': 'RANDOM() / (ip_liczba / 2)'}, order_by=['-waga'])
+    adres = obiekty.first().adres
+    return redirect(adres)
