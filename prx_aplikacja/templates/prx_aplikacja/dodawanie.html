@@ -1,0 +1,19 @@
+{% extends 'prx_aplikacja/strona.html' %}
+
+{% block glowna_zawartosc %}
+    {% if stan == 'wyslano' %}
+        Formularz został wysłany. Proxy będą widoczne na liście po zweryfikowaniu przez administratora.<br>
+    {% elif stan == 'puste_pole' %}
+        Nie wypełniłeś wymaganego pola formularza.<br>
+    {% elif stan == 'spam' %}
+        HTML/BBCode jest zablokowany.<br>
+    {% else %}
+        <form action="/dodaj" method="post">
+            Wpisz adresy proxy, które chcesz dodać do spisu &ndash; jeden na linię.<br>
+            Proxy zostaną dodane do listy po zweryfikowaniu przez administratora.<br><br>
+            <textarea name="proxy" rows="25" cols="80" required></textarea>
+            <br>
+            <input type="submit" value="Wyślij &#187;">
+        </form>
+    {% endif %}
+{% endblock %}

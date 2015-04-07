@@ -1,9 +1,13 @@
 from django.shortcuts import render, redirect
 from django.db.models import Case, When, F, Count
 from django.http import Http404
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import EmailMessage
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 import math
+import re
+import email.utils
 
 def index(zadanie, strona=None, kraj=None, ip=None):
     # utworzenie ORDER BY
@@ -107,3 +111,47 @@ def losowy(zadanie):
     obiekty = obiekty.extra(select={'waga': 'RANDOM() / (ip_liczba / 2)'}, order_by=['-waga'])
     adres = obiekty.first().adres
     return redirect(adres)
+
+@csrf_exempt
+# bez ochrony przed CSRF, ponieważ efektem ubocznym jest tylko wysłanie maila
+# a formularz ma być dostępny dla użytkowników z wyłączoną obsługą cookies
+# zwłaszcza wchodzących przez bramkę proxy
+def dodaj(zadanie):
+    if zadanie.method == 'POST':
+        # POST - odebranie danych wpisanych do formularza
+        proxy = zadanie.POST.get('proxy')
+
+        # wyrażenie regularne pasujące do linków HTML i BBCode
+        # często pojawiających się w spamie formularzowym
+        wyrazenie_spam = re.compile(r'<a(\s+[^\s]+)*\s+href=|\[url[=\]]',
+            re.IGNORECASE | re.DOTALL)
+
+        if proxy in [None, '']:
+            # niewypełnione pole
+            kontekst = {'stan': 'puste_pole'}
+        elif wyrazenie_spam.search(proxy):
+            # prawdopodobnie spam
+            kontekst = {'stan': 'spam'}
+        else:
+            # prawidłowa zawartość - wysłanie e-maila
+            
+            dodatkowe_naglowki = {
+                'Received': 'from ' + zadanie.META.get('REMOTE_ADDR') + ' ' +
+                            'by prx.centrump2p.com with HTTP; ' +
+                            email.utils.formatdate(),
+                'User-Agent': 'prx.centrump2p.com',
+            }
+            
+            EmailMessage(
+                subject='Nowe proxy do dodania',
+                body=proxy,
+                to=['colin@colin.net.pl'],
+                headers=dodatkowe_naglowki
+            ).send()
+            
+            kontekst = {'stan': 'wyslano'}
+    else:
+        # nie POST - pokazanie formularza
+        kontekst = {'stan': ''}
+
+    return render(zadanie, 'prx_aplikacja/dodawanie.html', kontekst)

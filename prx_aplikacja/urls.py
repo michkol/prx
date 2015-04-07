@@ -7,4 +7,5 @@ urlpatterns = [
     url(r'^kraj/$', views.lista_krajow, name='lista_krajow'),
     url(r'^ip/(?P<ip>.*)$', views.index, name='ip'),
     url(r'^losowy$', views.losowy, name='losowy'),
+    url(r'^dodaj$', views.dodaj, name='dodaj'),
 ]
