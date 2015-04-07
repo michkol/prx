@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from django.db.models import Case, When, F
+from django.db.models import Case, When, F, Count
 from django.http import Http404
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
@@ -85,6 +85,20 @@ def index(zadanie, strona=None, kraj=None, ip=None):
         dodaj_naglowki_stronicowania(odpowiedz, strona, na_strone, obiekty.count(), prefiks_adresow_stron)
 
     return odpowiedz
+
+def lista_krajow(zadanie):
+    # wiersz: kraj i liczba bramek z niego
+    kraje_z_liczbami = BramkaProxy.objects.values('kraj').exclude(kraj='')
+    kraje_z_liczbami = kraje_z_liczbami.annotate(ile=Count('kraj')).order_by('-ile')
+    
+    kontekst = {
+        'kraje_z_liczbami': kraje_z_liczbami,
+        'nieklikalny_naglowek': False,
+        'description_widoczny': False,
+        'dluga_stopka': False,
+    }
+    
+    return render(zadanie, 'prx_aplikacja/lista_krajow.html', kontekst)
 
 def losowy(zadanie):
     # losowa działająca bramka proxy z sensowną szybkością

@@ -1,0 +1,15 @@
+{% extends 'prx_aplikacja/strona.html' %}
+
+{% block glowna_zawartosc %}
+    {% if kraje_z_liczbami.count > 0 %}
+        <ol id="kraje">
+            {% for wiersz in kraje_z_liczbami %}
+                <li>
+                    <a href="/kraj/{{ wiersz.kraj | lower }}/">
+                        {{ wiersz.kraj | pelna_nazwa_kraju }} ({{ wiersz.ile }})
+                    </a>
+                </li>
+            {% endfor %}
+        </ol>
+    {% endif %}
+{% endblock %}
