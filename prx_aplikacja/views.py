@@ -90,6 +90,14 @@ def index(zadanie, strona=None, kraj=None, ip=None):
 
     return odpowiedz
 
+def stary_kraj(zadanie, skrot, dalsza_sciezka):
+    nowe_skroty = {
+        'gb': 'uk',
+        'tp': 'tl',
+        'zr': 'cd',
+    }
+    return redirect('/kraj/' + nowe_skroty[skrot] + '/' + dalsza_sciezka)
+
 def lista_krajow(zadanie):
     # wiersz: kraj i liczba bramek z niego
     kraje_z_liczbami = BramkaProxy.objects.values('kraj').exclude(kraj='')
