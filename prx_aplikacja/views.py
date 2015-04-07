@@ -15,7 +15,7 @@ def index(zadanie, strona=None, kraj=None, ip=None):
 
     if ip is None:
         # lista nie według kraju powinna zawierać szybkie polskie nad innymi
-        if kraj is not None:
+        if kraj is None:
             sortowanie.append(Case(When(kraj='PL', ping__lt=250, then=1), default=0).desc())
 
         # nieodpowiadające pod innymi
@@ -95,12 +95,7 @@ def lista_krajow(zadanie):
     kraje_z_liczbami = BramkaProxy.objects.values('kraj').exclude(kraj='')
     kraje_z_liczbami = kraje_z_liczbami.annotate(ile=Count('kraj')).order_by('-ile')
     
-    kontekst = {
-        'kraje_z_liczbami': kraje_z_liczbami,
-        'nieklikalny_naglowek': False,
-        'description_widoczny': False,
-        'dluga_stopka': False,
-    }
+    kontekst = {'kraje_z_liczbami': kraje_z_liczbami}
     
     return render(zadanie, 'prx_aplikacja/lista_krajow.html', kontekst)
 
