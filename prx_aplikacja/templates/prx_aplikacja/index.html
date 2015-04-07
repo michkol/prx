@@ -5,6 +5,14 @@
         <h2>Wszystkie proxy z kraju: {{ kraj|pelna_nazwa_kraju }}</h2>
     {% elif ip != None %}
         <h2>Wszystkie proxy z IP: {{ ip }}</h2>
+    {% else %}
+        <nav>
+            <div class="navl">
+                [<a href="/losowy">Losowy proxy</a>] |
+                [<a href="/kraj/">Według kraju</a>]
+            </div>
+        </nav>
+        <br>
     {% endif %}
 
     <table id="lista">
