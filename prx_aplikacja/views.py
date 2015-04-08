@@ -5,6 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import EmailMessage
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
+from .templatetags.tagi import pelna_nazwa_kraju
 import math
 import re
 import email.utils
@@ -68,8 +69,17 @@ def index(zadanie, strona=None, kraj=None, ip=None):
         strona, pierwszy, ostatni = None, None, None
         prefiks_adresow_stron = None
 
+    # tytuł strony
+    if ip is not None:
+        tytul = ip
+    elif kraj is not None:
+        tytul = pelna_nazwa_kraju(kraj)
+    else:
+        tytul = None
+
     # kontekst dla szablonu
     kontekst = {
+        'tytul': tytul,
         'lista': obiekty[pierwszy:ostatni],
         'kraj': kraj,
         'ip': ip,
@@ -103,7 +113,10 @@ def lista_krajow(zadanie):
     kraje_z_liczbami = BramkaProxy.objects.values('kraj').exclude(kraj='')
     kraje_z_liczbami = kraje_z_liczbami.annotate(ile=Count('kraj')).order_by('-ile')
     
-    kontekst = {'kraje_z_liczbami': kraje_z_liczbami}
+    kontekst = {
+        'tytul': 'Według kraju',
+        'kraje_z_liczbami': kraje_z_liczbami,
+    }
     
     return render(zadanie, 'prx_aplikacja/lista_krajow.html', kontekst)
 
@@ -157,4 +170,5 @@ def dodaj(zadanie):
         # nie POST - pokazanie formularza
         kontekst = {'stan': ''}
 
+    kontekst['tytul'] = 'Dodaj proxy'
     return render(zadanie, 'prx_aplikacja/dodawanie.html', kontekst)

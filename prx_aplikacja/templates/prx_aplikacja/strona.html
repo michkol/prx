@@ -1,7 +1,12 @@
 <!doctype html>
 <html lang="pl-pl">
     <head>
-        <title>Lista bramek proxy</title>
+        <title>
+            {% if tytul != None %}
+                {{ tytul }} &bull;
+            {% endif %}
+            Lista bramek proxy
+        </title>
         <link rel="stylesheet" href="/style.css">
         {% if description_widoczny %}
             <meta name="description" content="Spis bramek proxy posortowany według szybkości. Przy każdym proxy podany jest kraj, czas odpowiedzi oraz adres IP.">
