@@ -1,7 +1,7 @@
 {% extends 'prx_aplikacja/strona.html' %}
 
 {% block glowna_zawartosc %}
-    {% if kraje_z_liczbami.count > 0 %}
+    {% if kraje_z_liczbami.exists %}
         <ol id="kraje">
             {% for wiersz in kraje_z_liczbami %}
                 <li>
