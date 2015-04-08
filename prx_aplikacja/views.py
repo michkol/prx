@@ -10,7 +10,7 @@ import math
 import re
 import email.utils
 
-def index(zadanie, strona=None, kraj=None, ip=None):
+def lista(zadanie, strona=None, kraj=None, ip=None):
     # utworzenie ORDER BY
     sortowanie = []
 
@@ -93,7 +93,7 @@ def index(zadanie, strona=None, kraj=None, ip=None):
     }
 
     # wygenerowanie odpowiedzi wraz z nagłówkami Link gdy istnieje podział na strony
-    odpowiedz = render(zadanie, 'prx_aplikacja/index.html', kontekst)
+    odpowiedz = render(zadanie, 'prx_aplikacja/lista.html', kontekst)
     
     if strona is not None:
         dodaj_naglowki_stronicowania(odpowiedz, strona, na_strone, obiekty.count(), prefiks_adresow_stron)
