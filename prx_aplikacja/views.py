@@ -1,11 +1,13 @@
 from django.shortcuts import render, redirect
 from django.db.models import Case, When, F, Count
-from django.http import Http404
+from django.http import Http404, HttpResponseForbidden
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import EmailMessage
+from django.middleware.csrf import get_token
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
+from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
 import re
 import email.utils
@@ -172,3 +174,39 @@ def dodaj(zadanie):
 
     kontekst['tytul'] = 'Dodaj proxy'
     return render(zadanie, 'prx_aplikacja/dodawanie.html', kontekst)
+
+def admin(zadanie):
+    if not zadanie.session.get('czy_zalogowany'):
+        return redirect('/admin/logowanie')
+
+    kontekst = {
+        'tytul': 'Panel administracyjny',
+        'token': get_token(zadanie),
+    }
+    return render(zadanie, 'prx_aplikacja/admin.html', kontekst)
+
+@csrf_exempt
+# CSRF przy POST jest niemożliwy, ponieważ jednym z pól jest hasło
+def admin_logowanie(zadanie):
+    if zadanie.method == 'POST':
+        # zalogowanie
+        podany_login = zadanie.POST.get('login')
+        podane_haslo = zadanie.POST.get('haslo')
+        
+        if (podany_login, podane_haslo) == (ADMIN_LOGIN, ADMIN_HASLO):
+            zadanie.session['czy_zalogowany'] = True
+        
+        return redirect('/admin/')
+    elif zadanie.GET.get('wyloguj'):
+        # obsługa CSRF
+        if zadanie.GET.get('token') != get_token(zadanie):
+            return HttpResponseForbidden('Nieprawidłowy token.',
+                content_type='text/plain; charset=UTF-8')
+    
+        # wylogowanie
+        zadanie.session['czy_zalogowany'] = False
+        return redirect('/admin/')
+    else:
+        # pokazanie formularza logowania
+        kontekst = {'tytul': 'Logowanie \u2022 Panel administracyjny'}
+        return render(zadanie, 'prx_aplikacja/admin_logowanie.html', kontekst)

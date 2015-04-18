@@ -12,4 +12,7 @@ urlpatterns = [
     url(r'^ip/(?P<ip>.*)$', views.lista, name='ip'),
     url(r'^losowy$', views.losowy, name='losowy'),
     url(r'^dodaj$', views.dodaj, name='dodaj'),
+    
+    url(r'^admin/$', views.admin, name='admin'),
+    url(r'^admin/logowanie$', views.admin_logowanie, name='admin_logowanie'),
 ]

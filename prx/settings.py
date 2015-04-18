@@ -105,5 +105,14 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+# Sesje
+SESSION_EXPIRE_AT_BROWSER_CLOSE = True
+SESSION_SERIALIZER = 'django.contrib.sessions.serializers.PickleSerializer'
+CSRF_COOKIE_HTTPONLY = True
+
 # Pole nadawcy w wysyłanych e-mailach
 DEFAULT_FROM_EMAIL = 'prx.centrump2p.com <admin@prx.centrump2p.com>'
+
+# Login i hasło do panelu administratora
+ADMIN_LOGIN = 'admin'
+ADMIN_HASLO = 'test'
