@@ -113,7 +113,7 @@ def stary_kraj(zadanie, skrot, dalsza_sciezka):
         'tp': 'tl',
         'zr': 'cd',
     }
-    return redirect('/kraj/' + nowe_skroty[skrot] + '/' + dalsza_sciezka)
+    return redirect('/kraj/' + nowe_skroty[skrot] + '/' + dalsza_sciezka, permanent=True)
 
 def lista_krajow(zadanie):
     # wiersz: kraj i liczba bramek z niego
