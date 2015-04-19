@@ -4,7 +4,7 @@
     <pre id="komunikaty"></pre>
     <script src="/jquery-1.11.1.min.js"></script>
     <script>
-        {% if not lista.empty %}
+        {% if lista.exists %}
             lista = ['{{ lista|join:"', '" }}']
         {% else %}
             lista = []
