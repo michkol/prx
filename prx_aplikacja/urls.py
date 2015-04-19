@@ -15,4 +15,5 @@ urlpatterns = [
     
     url(r'^admin/$', views.admin, name='admin'),
     url(r'^admin/logowanie$', views.admin_logowanie, name='admin_logowanie'),
+    url(r'^admin/pinger$', views.admin_pinger, name='admin_pinger'),
 ]

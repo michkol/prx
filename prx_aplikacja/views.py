@@ -1,16 +1,20 @@
 from django.shortcuts import render, redirect
 from django.db.models import Case, When, F, Count
-from django.http import Http404, HttpResponseForbidden
+from django.http import Http404, HttpResponseForbidden, HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import EmailMessage
 from django.middleware.csrf import get_token
+from django.utils import timezone
+from django.template.defaultfilters import floatformat
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
+from .siec import ping
 from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
 import re
 import email.utils
+import urllib.parse
 
 def lista(zadanie, strona=None, kraj=None, ip=None):
     # utworzenie ORDER BY
@@ -200,8 +204,7 @@ def admin_logowanie(zadanie):
     elif zadanie.GET.get('wyloguj'):
         # obsługa CSRF
         if zadanie.GET.get('token') != get_token(zadanie):
-            return HttpResponseForbidden('Nieprawidłowy token.',
-                content_type='text/plain; charset=UTF-8')
+            return odpowiedz_nieprawidlowy_token()
     
         # wylogowanie
         zadanie.session['czy_zalogowany'] = False
@@ -210,3 +213,61 @@ def admin_logowanie(zadanie):
         # pokazanie formularza logowania
         kontekst = {'tytul': 'Logowanie \u2022 Panel administracyjny'}
         return render(zadanie, 'prx_aplikacja/admin_logowanie.html', kontekst)
+
+def admin_pinger(zadanie):
+    if not zadanie.session.get('czy_zalogowany'):
+        return redirect('/admin/logowanie')
+
+    if zadanie.method != 'POST':
+        # strona pokazująca postęp
+    
+        # obsługa CSRF
+        if zadanie.GET.get('token') != get_token(zadanie):
+            return odpowiedz_nieprawidlowy_token()
+
+        # kontekst, szablon
+        kontekst = {
+            'tytul': 'Pinger \u2022 Panel administracyjny',
+            'token': get_token(zadanie),
+            'adres_post': '/admin/pinger',
+            'lista': BramkaProxy.objects.values_list('ip', flat=True).distinct(),
+        }
+
+        return render(zadanie, 'prx_aplikacja/admin_operacje_ajax.html', kontekst)
+    else:
+        # żądanie AJAX dotyczące pojedynczego IP
+        
+        # aktualnie wybrany IP z listy w JS
+        ip = zadanie.POST.get('wybrany_element', '')
+        
+        # ustalenie portu jakiejkolwiek bramki z tego IP
+        url = urllib.parse.urlparse(BramkaProxy.objects.filter(ip=ip)[0].adres)
+        port = url.port
+        if port is None:
+            if url.scheme == 'https':
+                port = 443
+            else:
+                port = 80
+        
+        # czas odpowiedzi na żądanie TCP
+        wartosc_ping = ping(ip, port)
+        
+        # aktualizacja dla wszystkich bramek z tego IP
+        BramkaProxy.objects.filter(ip=ip).update(
+            ping=wartosc_ping,
+            ost_spr_ping=timezone.now()
+        )
+
+        # przygotowanie odpowiedzi do pokazania na stronie
+        if wartosc_ping is not None:
+            ping_str = floatformat(wartosc_ping, 2)
+        else:
+            ping_str = 'None'
+            
+        return HttpResponse(
+            'ping (port ' + str(port) + ') wynosi ' + ping_str + ' ms.',
+            content_type='text/plain; charset=UTF-8'
+        )
+
+def odpowiedz_nieprawidlowy_token():
+    return HttpResponseForbidden('Nieprawidłowy token.', content_type='text/plain; charset=UTF-8')

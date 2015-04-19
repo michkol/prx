@@ -1,0 +1,53 @@
+{% extends 'prx_aplikacja/strona.html' %}
+
+{% block glowna_zawartosc %}
+<pre id="komunikaty"></pre>
+<script src="/jquery-1.11.1.min.js"></script>
+<script>
+    {% if not lista.empty %}
+        lista = ['{{ lista|join:"', '" }}']
+    {% else %}
+        lista = []
+    {% endif %}
+
+    function wykonaj_operacje(czy_dopisywanie_komunikatow) {
+        komunikaty = jQuery('#komunikaty'); 
+
+        if (lista.length == 0) {
+            komunikaty.text('Koniec.\n');
+            return;
+        }
+
+        if (!czy_dopisywanie_komunikatow) {
+            komunikaty.text('Proszę czekać.\n\n');
+        }
+        
+        jQuery.ajax({
+            'url': '{{ adres_post }}',
+            'method': 'POST',
+            'data': {'wybrany_element': lista[0], 'csrfmiddlewaretoken': '{{ token }}'},
+            'dataType': 'text',
+            'success': function(odpowiedz) {
+                komunikaty.append(lista[0] + ': ' + odpowiedz + '\n');
+                lista.shift();
+                wykonaj_operacje(true);
+            },
+            'error': function() {
+                komunikat = 'Wystąpił problem z połączeniem między przeglądarką a serwerem.\n\n' +
+                            'Możesz <a href="#">spróbować ponownie</a> od miejsca wystąpienia błędu.\n\n';
+                komunikat = jQuery('<span>' + komunikat + '</span>');
+                komunikat.find('a').click(function() {
+                    wykonaj_operacje();
+                    return false;
+                });
+                komunikaty.html(komunikat);
+            }
+        });
+    }
+
+    wykonaj_operacje();
+</script>
+<noscript>
+    Ta funkcja wymaga włączonej obsługi JavaScriptu.
+</noscript>
+{% endblock %}
