@@ -1,28 +1,28 @@
 {% extends 'prx_aplikacja/strona.html' %}
 
 {% block glowna_zawartosc %}
-<menu>
-    <li>
-        <a href="/admin/pinger?token={{ token }}">Sprawdź ping</a>
-        (<a href="/admin/pinger?wszystkie=1&amp;token={{ token }}">wszystkie proxy</a>)
-    </li>
-    <li><a href="/admin/sprawdz_ip?token={{ token }}">Sprawdź IP</a></li>
-    <li><a href="/admin/logowanie?wyloguj=1&amp;token={{ token }}">Wyloguj</a></li>
-    <li>
-        <form method="post" action="/admin/dodaj">
-            <label for="adresy">Dodaj proxy (separator: enter)</label><br>
-            <textarea rows="15" cols="50" name="adresy" id="adresy" required></textarea><br>
-            {% csrf_token %}
-            <input type="submit" value="Dodaj &#187;">
-        </form>
-    </li>
-    <li>
-        <form method="post" action="/admin/usun">
-            <label for="adresy">Usuń proxy</label><br>
-            <input type="text" size="55" name="adres" required>
-            {% csrf_token %}
-            <input type="submit" value="Usuń &#187;">
-        </form>
-    </li>
-</menu>
+    <menu>
+        <li>
+            <a href="/admin/pinger?token={{ token }}">Sprawdź ping</a>
+            (<a href="/admin/pinger?wszystkie=1&amp;token={{ token }}">wszystkie proxy</a>)
+        </li>
+        <li><a href="/admin/sprawdz_ip?token={{ token }}">Sprawdź IP</a></li>
+        <li><a href="/admin/logowanie?wyloguj=1&amp;token={{ token }}">Wyloguj</a></li>
+        <li>
+            <form method="post" action="/admin/dodaj">
+                <label for="adresy">Dodaj proxy (separator: enter)</label><br>
+                <textarea rows="15" cols="50" name="adresy" id="adresy" required></textarea><br>
+                {% csrf_token %}
+                <input type="submit" value="Dodaj &#187;">
+            </form>
+        </li>
+        <li>
+            <form method="post" action="/admin/usun">
+                <label for="adresy">Usuń proxy</label><br>
+                <input type="text" size="55" name="adres" required>
+                {% csrf_token %}
+                <input type="submit" value="Usuń &#187;">
+            </form>
+        </li>
+    </menu>
 {% endblock %}
