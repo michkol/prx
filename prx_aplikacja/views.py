@@ -15,6 +15,7 @@ import math
 import re
 import email.utils
 import urllib.parse
+import datetime
 
 def lista(zadanie, strona=None, kraj=None, ip=None):
     # utworzenie ORDER BY
@@ -224,13 +225,18 @@ def admin_pinger(zadanie):
         # obsługa CSRF
         if zadanie.GET.get('token') != get_token(zadanie):
             return odpowiedz_nieprawidlowy_token()
+        
+        lista = BramkaProxy.objects
+        if not zadanie.GET.get('wszystkie'):
+            lista = lista.filter(ost_spr_ping__lt=(timezone.now() - datetime.timedelta(days=7)))
+        lista = lista.values_list('ip', flat=True).distinct()
 
         # kontekst, szablon
         kontekst = {
             'tytul': 'Pinger \u2022 Panel administracyjny',
             'token': get_token(zadanie),
             'adres_post': '/admin/pinger',
-            'lista': BramkaProxy.objects.values_list('ip', flat=True).distinct(),
+            'lista': lista,
         }
 
         return render(zadanie, 'prx_aplikacja/admin_operacje_ajax.html', kontekst)
