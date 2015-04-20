@@ -9,13 +9,14 @@ from django.template.defaultfilters import floatformat
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
-from .siec import ping
+from .siec import ping, kraj_ip
 from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
 import re
 import email.utils
 import urllib.parse
 import datetime
+import socket
 
 def lista(zadanie, strona=None, kraj=None, ip=None):
     # utworzenie ORDER BY
@@ -272,6 +273,68 @@ def admin_pinger(zadanie):
             
         return HttpResponse(
             'ping (port ' + str(port) + ') wynosi ' + ping_str + ' ms.',
+            content_type='text/plain; charset=UTF-8'
+        )
+
+def admin_sprawdz_ip(zadanie):
+    if not zadanie.session.get('czy_zalogowany'):
+        return redirect('/admin/logowanie')
+
+    if zadanie.method != 'POST':
+        # strona pokazująca postęp
+
+        # obsługa CSRF
+        if zadanie.GET.get('token') != get_token(zadanie):
+            return odpowiedz_nieprawidlowy_token()
+
+        #kontekst, szablon
+        kontekst = {
+            'tytul': 'Sprawdzanie IP \u2022 Panel administracyjny',
+            'token': get_token(zadanie),
+            'adres_post': '/admin/sprawdz_ip',
+            'lista': [obiekt.id for obiekt in BramkaProxy.objects.all()],
+        }
+
+        return render(zadanie, 'prx_aplikacja/admin_operacje_ajax.html', kontekst)
+    else:
+        # aktualnie wybrany ID z listy JS
+        id = zadanie.POST.get('wybrany_element', '')
+        
+        # obiekt bramki proxy o takim ID
+        obiekt = BramkaProxy.objects.get(id=id)
+        
+        # stary IP i host
+        stary_ip = obiekt.ip
+        host = urllib.parse.urlparse(obiekt.adres).hostname
+
+        # sprawdzenie aktualnego IP dla hosta
+        try:
+            ip = socket.gethostbyname(host)
+        except socket.gaierror:
+            ip = None
+
+        if ip is None:
+            # nieprawidłowy IP
+            komunikat = 'nieprawidłowy IP'
+            if obiekt.ost_spr_ip < timezone.now() - datetime.timedelta(days=1):
+                obiekt.ip_blad += 1
+        elif ip != stary_ip:
+            # inny niż stary
+            kraj = kraj_ip(ip)
+            komunikat = 'zmiana IP na ' + ip + ' (' + kraj + ')'
+            obiekt.ip = ip
+            obiekt.kraj = kraj
+            obiekt.ip_blad = 0
+        else:
+            # taki sam
+            komunikat = 'IP się nie zmienił'
+            obiekt.ip_blad = 0
+        
+        obiekt.ost_spr_ip = timezone.now()
+        obiekt.save()
+
+        return HttpResponse(
+            komunikat,
             content_type='text/plain; charset=UTF-8'
         )
 
