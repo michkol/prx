@@ -10,6 +10,7 @@ from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
 from .siec import ping, kraj_ip
+from .zliczanie import oblicz_ip_indeks_liczba
 from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
 import re
@@ -248,7 +249,12 @@ def admin_pinger(zadanie):
         ip = zadanie.POST.get('wybrany_element', '')
         
         # ustalenie portu jakiejkolwiek bramki z tego IP
-        url = urllib.parse.urlparse(BramkaProxy.objects.filter(ip=ip)[0].adres)
+        bramki_z_ip = BramkaProxy.objects.filter(ip=ip)
+        
+        if not bramki_z_ip.exists():
+            raise Http404('Nie znaleziono bramek proxy na podanym IP.')
+
+        url = urllib.parse.urlparse(bramki_z_ip[0].adres)
         port = url.port
         if port is None:
             if url.scheme == 'https':
@@ -301,7 +307,10 @@ def admin_sprawdz_ip(zadanie):
         id = zadanie.POST.get('wybrany_element', '')
         
         # obiekt bramki proxy o takim ID
-        obiekt = BramkaProxy.objects.get(id=id)
+        try:
+            obiekt = BramkaProxy.objects.get(id=id)
+        except BramkaProxy.DoesNotExist:
+            raise Http404('Nie znaleziono bramki proxy o podanym ID.')
         
         # stary IP i host
         stary_ip = obiekt.ip
@@ -312,6 +321,9 @@ def admin_sprawdz_ip(zadanie):
             ip = socket.gethostbyname(host)
         except socket.gaierror:
             ip = None
+
+        # czy wymaga ponownego obliczenia ip_indeks i ip_liczba
+        czy_wymaga_przeliczenia = False
 
         if ip is None:
             # nieprawidłowy IP
@@ -325,6 +337,7 @@ def admin_sprawdz_ip(zadanie):
             obiekt.ip = ip
             obiekt.kraj = kraj
             obiekt.ip_blad = 0
+            czy_wymaga_przeliczenia = True
         else:
             # taki sam
             komunikat = 'IP się nie zmienił'
@@ -332,6 +345,9 @@ def admin_sprawdz_ip(zadanie):
         
         obiekt.ost_spr_ip = timezone.now()
         obiekt.save()
+        
+        if czy_wymaga_przeliczenia:
+            oblicz_ip_indeks_liczba(ip)
 
         return HttpResponse(
             komunikat,
