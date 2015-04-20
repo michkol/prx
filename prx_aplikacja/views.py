@@ -6,6 +6,7 @@ from django.core.mail import EmailMessage
 from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.template.defaultfilters import floatformat
+from django.utils.html import escape
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
@@ -278,7 +279,7 @@ def admin_pinger(zadanie):
             ping_str = 'None'
             
         return HttpResponse(
-            'ping (port ' + str(port) + ') wynosi ' + ping_str + ' ms.',
+            'Ping dla ' + ip + ':' + str(port) + ' wynosi ' + ping_str + ' ms.',
             content_type='text/plain; charset=UTF-8'
         )
 
@@ -350,7 +351,7 @@ def admin_sprawdz_ip(zadanie):
             oblicz_ip_indeks_liczba(ip)
 
         return HttpResponse(
-            komunikat,
+            'Proxy ' + escape(obiekt.adres) + ' &ndash; ' + komunikat + '.',
             content_type='text/plain; charset=UTF-8'
         )
 

@@ -28,7 +28,7 @@
                 'data': {'wybrany_element': lista[0], 'csrfmiddlewaretoken': '{{ token }}'},
                 'dataType': 'text',
                 'success': function(odpowiedz) {
-                    komunikaty.append(lista[0] + ': ' + odpowiedz + '\n');
+                    komunikaty.append(odpowiedz + '\n');
                     lista.shift();
                     wykonaj_operacje(true);
                 },
