@@ -32,10 +32,6 @@ def lista(zadanie, strona=None, kraj=None, ip=None):
         # nieodpowiadające pod innymi
         sortowanie.append(Case(When(ping__isnull=True, then=1), default=0).asc())
 
-        # z niewyliczonym numerem sekwencyjnym dla IP jak z bardzo dużym
-        # (trwa aktualizacja bazy, wyliczenie nastąpi po jej zakończeniu)
-        sortowanie.append(Case(When(ip_indeks__isnull=True, then=1), default=0).asc())
-
         # według szybkości, ale z coraz mocniejszym obniżaniem pozycji    
         # kolejnych bramek z powtórzonym IP    
         sortowanie.append((F('ping') * F('ip_indeks') + 85 * (F('ip_indeks') - 1)).asc())
