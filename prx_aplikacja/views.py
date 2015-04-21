@@ -10,7 +10,7 @@ from django.utils.html import escape, mark_safe
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
-from .siec import ping, kraj_ip, adres_k
+from .siec import ping, kraj_ip, adres_k, port_z_adresu
 from .zliczanie import oblicz_ip_indeks_liczba
 from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
@@ -251,13 +251,7 @@ def admin_pinger(zadanie):
         if not bramki_z_ip.exists():
             raise Http404('Nie znaleziono bramek proxy na podanym IP.')
 
-        url = urllib.parse.urlparse(bramki_z_ip[0].adres)
-        port = url.port
-        if port is None:
-            if url.scheme == 'https':
-                port = 443
-            else:
-                port = 80
+        port = port_z_adresu(bramki_z_ip[0].adres)
         
         # czas odpowiedzi na żądanie TCP
         wartosc_ping = ping(ip, port)
@@ -393,7 +387,7 @@ def admin_dodaj(zadanie):
             return odpowiedz_tekstowa(escape(linia) + ' &ndash; nieprawidłowy IP.')
 
         kraj = kraj_ip(ip)
-        wartosc_ping = ping(ip, 80)  # do zrobienia: port z adresu
+        wartosc_ping = ping(ip, port_z_adresu(linia))
 
         BramkaProxy(
             adres=linia,

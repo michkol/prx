@@ -299,3 +299,13 @@ def adres_k(adres):
        sciezka = '/'
     
     return host + sciezka
+
+def port_z_adresu(adres):
+    adres = urllib.parse.urlparse(adres)
+    port = adres.port
+    if port is None:
+        if adres.scheme == 'https':
+            port = 443
+        else:
+            port = 80
+    return port
