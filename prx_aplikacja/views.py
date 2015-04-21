@@ -407,6 +407,29 @@ def admin_dodaj(zadanie):
             floatformat(wartosc_ping, 2) + ' ms.'
         )
 
+def admin_usun(zadanie):
+    if not zadanie.session.get('czy_zalogowany'):
+        return redirect('/admin/logowanie')
+
+    adres = zadanie.POST.get('adres', '')
+
+    try:
+        obiekt = BramkaProxy.objects.get(adres_k=adres_k(adres))
+        ip = obiekt.ip
+
+        obiekt.delete()
+        oblicz_ip_indeks_liczba(ip)
+
+        sukces = True
+    except BramkaProxy.DoesNotExist:
+        sukces = False
+
+    kontekst = {
+        'tytul': 'Usuwanie \u2022 Panel administracyjny',
+        'sukces': sukces,
+    }
+    return render(zadanie, 'prx_aplikacja/admin_usuwanie.html', kontekst)
+
 def odpowiedz_nieprawidlowy_token():
     return HttpResponseForbidden('Nieprawidłowy token.', content_type='text/plain; charset=UTF-8')
 

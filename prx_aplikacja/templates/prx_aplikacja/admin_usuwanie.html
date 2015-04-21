@@ -1,0 +1,9 @@
+{% extends 'prx_aplikacja/strona.html' %}
+
+{% block glowna_zawartosc %}
+    {% if sukces %}
+        Usunięto.
+    {% else %}
+        Nie znaleziono takiego proxy.
+    {% endif %}
+{% endblock %}

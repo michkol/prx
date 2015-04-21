@@ -18,4 +18,5 @@ urlpatterns = [
     url(r'^admin/pinger$', views.admin_pinger, name='admin_pinger'),
     url(r'^admin/sprawdz_ip$', views.admin_sprawdz_ip, name='admin_sprawdz_ip'),
     url(r'^admin/dodaj$', views.admin_dodaj, name='admin_dodaj'),
+    url(r'^admin/usun$', views.admin_usun, name='admin_usun'),
 ]
