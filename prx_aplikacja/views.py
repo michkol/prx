@@ -6,11 +6,11 @@ from django.core.mail import EmailMessage
 from django.middleware.csrf import get_token
 from django.utils import timezone
 from django.template.defaultfilters import floatformat
-from django.utils.html import escape
+from django.utils.html import escape, mark_safe
 from .models import BramkaProxy
 from .naglowki_stronicowania import dodaj_naglowki_stronicowania
 from .templatetags.tagi import pelna_nazwa_kraju
-from .siec import ping, kraj_ip
+from .siec import ping, kraj_ip, adres_k
 from .zliczanie import oblicz_ip_indeks_liczba
 from prx.settings import ADMIN_LOGIN, ADMIN_HASLO
 import math
@@ -278,9 +278,8 @@ def admin_pinger(zadanie):
         else:
             ping_str = 'None'
             
-        return HttpResponse(
-            'Ping dla ' + ip + ':' + str(port) + ' wynosi ' + ping_str + ' ms.',
-            content_type='text/plain; charset=UTF-8'
+        return odpowiedz_tekstowa(
+            'Ping dla ' + ip + ':' + str(port) + ' wynosi ' + ping_str + ' ms.'
         )
 
 def admin_sprawdz_ip(zadanie):
@@ -350,10 +349,76 @@ def admin_sprawdz_ip(zadanie):
         if czy_wymaga_przeliczenia:
             oblicz_ip_indeks_liczba(ip)
 
-        return HttpResponse(
-            'Proxy ' + escape(obiekt.adres) + ' &ndash; ' + komunikat + '.',
-            content_type='text/plain; charset=UTF-8'
+        return odpowiedz_tekstowa(
+            'Proxy ' + escape(obiekt.adres) + ' &ndash; ' + komunikat + '.'
+        )
+
+def admin_dodaj(zadanie):
+    if not zadanie.session.get('czy_zalogowany'):
+        return redirect('/admin/logowanie')
+
+    linia = zadanie.POST.get('wybrany_element')
+
+    if linia is None:
+        # widoczna w przeglądarce strona
+        lista = [mark_safe(linia.strip()) for linia
+                 in zadanie.POST.get('adresy', '').splitlines()
+                 if linia.strip() != '']
+        
+        kontekst = {
+            'tytul': 'Dodawanie \u2022 Panel administracyjny',
+            'token': get_token(zadanie),
+            'adres_post': '/admin/dodaj',
+            'lista': lista,
+            'bez_strony_koncowej': True,
+        }
+
+        return render(zadanie, 'prx_aplikacja/admin_operacje_ajax.html', kontekst)
+    else:
+        # AJAX
+
+        # obsługa adresów bez protokołu
+        if ':' not in linia:
+            linia = 'http://' + linia
+
+        # kanoniczny adres, do szukania duplikatów
+        wartosc_adres_k = adres_k(linia)
+        
+        if wartosc_adres_k is None:
+            return odpowiedz_tekstowa(escape(linia) + ' &ndash; nieprawidłowy URL.')
+
+        if BramkaProxy.objects.filter(adres_k=wartosc_adres_k).exists():
+            return odpowiedz_tekstowa(escape(linia) + ' &ndash; duplikat.')
+
+        host = urllib.parse.urlparse(linia).hostname
+        try:
+            ip = socket.gethostbyname(host)
+        except socket.gaierror:
+            return odpowiedz_tekstowa(escape(linia) + ' &ndash; nieprawidłowy IP.')
+
+        kraj = kraj_ip(ip)
+        wartosc_ping = ping(ip, 80)  # do zrobienia: port z adresu
+
+        BramkaProxy(
+            adres=linia,
+            adres_k=wartosc_adres_k,
+            kraj=kraj,
+            ip=ip,
+            ping=wartosc_ping,
+            ost_spr_ip=timezone.now(),
+            ost_spr_ping=timezone.now(),
+        ).save()
+        
+        # przeliczenie ip_indeks i ip_liczba dla IP dodanej bramki
+        oblicz_ip_indeks_liczba(ip)
+        
+        return odpowiedz_tekstowa(
+            escape(linia) + ' &ndash; dodano &ndash; ' + ip + ' (' + kraj + ') &ndash; ' +
+            floatformat(wartosc_ping, 2) + ' ms.'
         )
 
 def odpowiedz_nieprawidlowy_token():
     return HttpResponseForbidden('Nieprawidłowy token.', content_type='text/plain; charset=UTF-8')
+
+def odpowiedz_tekstowa(tekst):
+    return HttpResponse(tekst, content_type='text/plain; charset=UTF-8')

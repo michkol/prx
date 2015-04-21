@@ -1,5 +1,7 @@
 import timeit
 import socket
+import urllib.parse
+import re
 
 def ping(ip, port):
     pingi = []
@@ -282,3 +284,18 @@ def kraj_ip(ip):
         return wszystkie_kody_liczbowe[kod]
     else:
         return ''
+
+# kanoniczny adres, do rozpoznawania duplikatów
+def adres_k(adres):
+    adres = urllib.parse.urlparse(adres)
+    if adres.scheme == '' or adres.hostname in [None, '']:
+        return None
+
+    host = adres.hostname
+    sciezka = adres.path
+
+    host = re.sub(r'^www\.|\.$', '', host, flags=re.IGNORECASE)
+    if sciezka in [None, '']:
+       sciezka = '/'
+    
+    return host + sciezka

@@ -14,12 +14,20 @@
             komunikaty = jQuery('#komunikaty'); 
 
             if (lista.length == 0) {
-                komunikaty.text('Koniec.\n');
+                {% if not bez_strony_koncowej %}
+                    komunikaty.text('Koniec.\n');
+                {% else %}
+                    komunikaty.append('\nKoniec.\n');
+                {% endif %}
                 return;
             }
 
             if (!czy_dopisywanie_komunikatow) {
-                komunikaty.text('Proszę czekać.\n\n');
+                {% if not bez_strony_koncowej %}
+                    komunikaty.text('Proszę czekać.\n\n');
+                {% else %}
+                    komunikaty.text('');
+                {% endif %}
             }
 
             jQuery.ajax({

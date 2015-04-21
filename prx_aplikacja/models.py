@@ -17,7 +17,7 @@ class BramkaProxy(models.Model):
     ip_indeks = models.PositiveIntegerField(null=True)
     
     # ile razem na tym samym IP
-    ip_liczba = models.PositiveIntegerField()
+    ip_liczba = models.PositiveIntegerField(null=True)
     
     # czas odpowiedzi na połączenie TCP
     ping = models.DecimalField(max_digits=6, decimal_places=2, null=True)

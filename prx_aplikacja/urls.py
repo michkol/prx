@@ -17,4 +17,5 @@ urlpatterns = [
     url(r'^admin/logowanie$', views.admin_logowanie, name='admin_logowanie'),
     url(r'^admin/pinger$', views.admin_pinger, name='admin_pinger'),
     url(r'^admin/sprawdz_ip$', views.admin_sprawdz_ip, name='admin_sprawdz_ip'),
+    url(r'^admin/dodaj$', views.admin_dodaj, name='admin_dodaj'),
 ]
